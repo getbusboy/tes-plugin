@@ -5,9 +5,7 @@
  * Version: 0.0.1
  * Author: You
  */
-
 if (!defined('ABSPATH')) exit;
-
 add_action('admin_notices', function () {
     if (!current_user_can('manage_options')) return;
     echo '<div class="notice notice-success is-dismissible"><p>BB Pusher deploy OK — v<strong>0.0.1</strong></p></div>';
