@@ -1,78 +1,14 @@
 <?php
 /**
- * Plugin Name: BB Pusher Test
- * Description: Minimal mock plugin to test WP Pusher deploys (admin page, shortcode, REST ping).
- * Version: 0.1.0
+ * Plugin Name: BB Pusher Test (Ultra Simple)
+ * Description: Minimal single-file plugin to verify WP Pusher deploys. Shows one admin notice.
+ * Version: 0.0.1
  * Author: You
  */
 
 if (!defined('ABSPATH')) exit;
 
-// Simple version bump spot for deploy tests
-define('BBPUSHER_TEST_VERSION', '0.1.0');
-
-// On (de)activation, record timestamps so you can see them in the UI
-register_activation_hook(__FILE__, function () {
-    update_option('bbpusher_test_activated_at', current_time('mysql'));
-});
-register_deactivation_hook(__FILE__, function () {
-    update_option('bbpusher_test_deactivated_at', current_time('mysql'));
-});
-
-// Admin page
-add_action('admin_menu', function () {
-    add_management_page(
-        'BB Pusher Test',
-        'BB Pusher Test',
-        'manage_options',
-        'bbpusher-test',
-        'bbpusher_test_admin_page'
-    );
-});
-
-function bbpusher_test_admin_page() {
-    $activated = get_option('bbpusher_test_activated_at', '—');
-    $deactivated = get_option('bbpusher_test_deactivated_at', '—');
-    $last_mod = date('Y-m-d H:i:s', @filemtime(__FILE__));
-    $rest = get_rest_url(null, '/bbpusher/v1/ping');
-    ?>
-    <div class="wrap">
-        <h1>BB Pusher Test</h1>
-        <p><strong>Plugin version:</strong> <?php echo esc_html(BBPUSHER_TEST_VERSION); ?></p>
-        <p><strong>File last modified:</strong> <?php echo esc_html($last_mod); ?></p>
-        <p><strong>Activated at:</strong> <?php echo esc_html($activated); ?></p>
-        <p><strong>Last deactivated at:</strong> <?php echo esc_html($deactivated); ?></p>
-        <p><strong>REST ping:</strong> <a href="<?php echo esc_url($rest); ?>" target="_blank" rel="noopener"><?php echo esc_html($rest); ?></a></p>
-        <p><strong>Shortcode:</strong> <code>[bbpusher]</code></p>
-        <p>Tip: bump the <code>BBPUSHER_TEST_VERSION</code> constant and push to verify WP Pusher updates here.</p>
-    </div>
-    <?php
-}
-
-// Dashboard notice after update (shows version so you can see it changed)
 add_action('admin_notices', function () {
     if (!current_user_can('manage_options')) return;
-    echo '<div class="notice notice-success is-dismissible"><p>BB Pusher Test active — version <strong>' . esc_html(BBPUSHER_TEST_VERSION) . '</strong></p></div>';
-});
-
-// Shortcode [bbpusher] → “BB Pusher OK — vX.Y.Z”
-add_shortcode('bbpusher', function () {
-    return 'BB Pusher OK — v' . esc_html(BBPUSHER_TEST_VERSION);
-});
-
-// REST: /wp-json/bbpusher/v1/ping
-add_action('rest_api_init', function () {
-    register_rest_route('bbpusher/v1', '/ping', [
-        'methods'  => 'GET',
-        'callback' => function () {
-            return [
-                'ok'       => true,
-                'version'  => BBPUSHER_TEST_VERSION,
-                'modified' => @filemtime(__FILE__),
-                'time'     => current_time('mysql'),
-                'site'     => get_bloginfo('name'),
-            ];
-        },
-        'permission_callback' => '__return_true',
-    ]);
+    echo '<div class="notice notice-success is-dismissible"><p>BB Pusher deploy OK — v<strong>0.0.1</strong></p></div>';
 });
